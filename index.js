@@ -29,12 +29,17 @@ async function run() {
         const packageDetailsCollection = client.db('bestTravel').collection('package');
         const bookingCollection = client.db('bestTravel').collection('bookingCollection');
         const countryDetails = client.db('bestTravel').collection('countriesDetails');
+        const bannersCollection = client.db('bestTravel').collection('banners');
         app.get('/countries', async (req, res) => {
             const query = {};
             const result = await countriesCollection.find(query).toArray();
             res.send(result);
         });
-
+        app.get('/banners', async (req, res) => {
+            const query = {};
+            const result = await bannersCollection.find(query).toArray();
+            res.send(result);
+        });
         app.get('/packageDetails', async (req, res) => {
             const query = {};
             const result = await packageDetailsCollection.find(query).toArray();
@@ -90,8 +95,30 @@ async function run() {
             const count = await packageCollection.estimatedDocumentCount();
             res.send({ count, result });
         });
+
+        app.get('/serch/:text', async (req, res) => {
+            const text = req.params.text;
+            console.log(text);
+            const result= await packageDetailsCollection.find({
+                $or:[
+                    {country_name:{$regex:text,$options:'i'}}
+                ]
+            }).toArray();
+            res.send(result);
+        })
         
         
+        // app.get('/add',async(req,res)=>{
+        //     const filter={};
+        //     const option = { upsert: true }
+        //     const updatedDoc = {
+        //         $set: {
+        //             country_name: 'hi'
+        //         }
+        //     }
+        //     const result = await packageDetailsCollection.updateMany(filter, updatedDoc, option);
+        //     res.send(result);
+        // }); 
 
         app.get('/allpackage', async (req, res) => {
             const page=req.query.page;
