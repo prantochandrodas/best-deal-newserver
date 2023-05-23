@@ -30,6 +30,7 @@ async function run() {
         const bookingCollection = client.db('bestTravel').collection('bookingCollection');
         const countryDetails = client.db('bestTravel').collection('countriesDetails');
         const bannersCollection = client.db('bestTravel').collection('banners');
+        const reviewsCollection = client.db('bestTravel').collection('reviews');
         app.get('/countries', async (req, res) => {
             const query = {};
             const result = await countriesCollection.find(query).toArray();
@@ -40,9 +41,33 @@ async function run() {
             const result = await bannersCollection.find(query).toArray();
             res.send(result);
         });
+
+        
         app.get('/packageDetails', async (req, res) => {
             const query = {};
             const result = await packageDetailsCollection.find(query).toArray();
+            res.send(result);
+        });
+         //get Reviews 
+        app.get('/getReviews/:id', async (req, res) => {
+            const packageId=req.params.id;
+            const query = {id:packageId};
+            const result = await reviewsCollection.find(query).toArray();
+            res.send(result);
+        });
+      
+        //add reviews
+        app.post('/reviews',async(req,res)=>{
+            const reviews=req.body;
+            const result=await reviewsCollection.insertOne(reviews);
+            res.send(result);
+        })
+        //delete review
+        app.delete('/deleteReview/:id', async (req, res) => {
+            const id = req.params.id;
+            console.log(id);
+            const query = { _id:new ObjectId(id) };
+            const result = await reviewsCollection.deleteOne(query);
             res.send(result);
         });
 
